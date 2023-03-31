@@ -14,6 +14,8 @@ import serial
 #import serial_asyncio
 import serial_asyncio
 
+import Adafruit_BBIO.UART as UART
+UART.setup("UART1")
 
 class SBUSReceiver:
     class SBUSFramer(asyncio.Protocol):
