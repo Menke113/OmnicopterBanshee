@@ -1,7 +1,7 @@
 import IMU_Code
 import time
 
-print("Hello World")
+print("Za Worudo!")
 
 #eulerData = IMU_Code.eulerData
 
