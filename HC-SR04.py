@@ -2,10 +2,10 @@ import Adafruit_BBIO.GPIO as GPIO
 import time
 
 vcc = "5v"
-trigger = "P8_12"
+trigger = "P8_16"
 
 
-echo = "P8_11"
+echo = "P8_15"
 
 gnd = "GND"
 
