@@ -1,8 +1,10 @@
 from scipy.optimize import minimize, NonlinearConstraint
 import numpy as np
 
+k_t = 0.01;
+
 def objective(x):
-    return np.prod(x) # this is the cost function
+    return np.sum(x) # this is the cost function
 
 def constraint1(x):
     return np.sum(x) - 16
@@ -12,7 +14,7 @@ def constraint2(x):
 
 w_max = 100000; # max angular rate^2 of motors, this is a guess
 
-x0 = np.ones(16) # will want this to be previous soluation
+x0 = np.ones(16) # will want this to be previous solution
 b = (0.0, w_max) # bounds are 0 to max angular rate^2 of motors
 bnds = [b -b b -b b -b b -b b -b b -b b -b b -b] # must be in format [w1_pos w1_neg w2_pos w2_neg ...]
 nonlinear_constraint1 = NonlinearConstraint(constraint1, -np.inf, 0)
