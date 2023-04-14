@@ -138,8 +138,8 @@ class SBUSReceiver:
 async def main():
     sbus = await SBUSReceiver.create("/dev/ttyO1")
     while True:
-        frame = await sbus.get_frame()
-        print(frame)
+       	frame = await sbus.get_frame()
+       	print(frame)
 
 
 if __name__ == '__main__':
