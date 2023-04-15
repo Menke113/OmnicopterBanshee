@@ -12,11 +12,11 @@ gnd = "GND"
 
 GPIO.cleanup()
 
-print("working")
-time.sleep(2)
+#print("working")
+#time.sleep(2)
 
 def distance_measurement(TRIG,ECHO):
-	print("here")
+#	print("here")
 	GPIO.output(TRIG, True)
 	time.sleep(0.00001)
 	GPIO.output(TRIG, False)
@@ -36,22 +36,23 @@ def distance_measurement(TRIG,ECHO):
 
 
 #Configuration
-print("trigger: [{}]".format(trigger))
+#print("trigger: [{}]".format(trigger))
 GPIO.setup(trigger, GPIO.OUT) #Trigger
-print("echo: [{}]".format(echo))
+#print("echo: [{}]".format(echo))
 GPIO.setup(echo, GPIO.IN) #Echo
 GPIO.output(trigger, False)
-print("Setup completed!")
+#print("Setup completed!")
 
 # Security
 GPIO.output(trigger, False)
 time.sleep(0.5)
 
-distance = distance_measurement(trigger,echo)
-while True:
-	print("Distance: [{}] m.".format(distance))
-	time.sleep(2)
-	distance = distance_measurement(trigger, echo)
+#distance = distance_measurement(trigger,echo)
+#while True:
+#	text = "Distance: [{}] m.".format(distance)
+#	print(text)
+#	time.sleep(2)
+#	distance = distance_measurement(trigger, echo)
 
 GPIO.cleanup()
-print("Done")
+#print("Done")
