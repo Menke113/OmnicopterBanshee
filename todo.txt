@@ -3,7 +3,7 @@
 optimization formulations: linear, quadratic, and paired quadratic + linear with extra constraints added to keep omegas the same for
 motor pairs
 - parse data from sensors into arrays
-- find out how to automatically configure motor pins to PWM
+- find out how to automatically configure motor pins to PWM - done
 - start FC software automatically upon being plugged in - done
 - find approximations for thrust coefficients of motor/prop pairs (can use reference numbers for similarly specced motors and props)
 - measure optimization timing and choose an update rate for each version of the FC software
