@@ -2,7 +2,7 @@
 - make loop that checks for the arming signal (throttle down + switch flip triggers the ESCs to be initialized)
 optimization formulations: linear, quadratic, and paired quadratic + linear with extra constraints added to keep omegas the same for
 motor pairs
-- parse data from sensors into arrays
+- parse data from sensors into arrays - done
 - find out how to automatically configure motor pins to PWM - done
 - start FC software automatically upon being plugged in - done
 - find approximations for thrust coefficients of motor/prop pairs (can use reference numbers for similarly specced motors and props)
