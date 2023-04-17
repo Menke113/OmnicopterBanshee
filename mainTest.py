@@ -21,7 +21,7 @@ def get_distance():
 #get_gravity()
 
 
-print(get_distance())
+#print(get_distance())
 
 
 print(get_euler())
@@ -31,10 +31,10 @@ print(get_linear_acceleration())
 print(get_gyroscope())
 print(get_gravity())
 
-print(get_distance())
-print(get_distance())
+#print(get_distance())
+#print(get_distance())
 
-print(get_distance())
+#print(get_distance())
 
 t3 = time.time()
 

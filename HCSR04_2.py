@@ -1,9 +1,9 @@
 import Adafruit_BBIO.GPIO as GPIO
 import time
-#Distance Sensor 1
+#Distance Sensor 2
 vcc = "5v"
-trigger = "P8_16"
-echo = "P8_15"
+trigger = "P8_18"
+echo = "P8_17"
 gnd = "GND"
 
 
