@@ -1,0 +1,14 @@
+- get the code to initialize the ESCs integrated
+- make loop that checks for the arming signal (throttle down + switch flip triggers the ESCs to be initialized)
+optimization formulations: linear, quadratic, and paired quadratic + linear with extra constraints added to keep omegas the same for
+motor pairs
+- parse data from sensors into arrays
+- find out how to automatically configure motor pins to PWM
+- start FC software automatically upon being plugged in - done
+- find approximations for thrust coefficients of motor/prop pairs (can use reference numbers for similarly specced motors and props)
+- measure optimization timing and choose an update rate for each version of the FC software
+- code to use the distance sensors and the gravity vector from the accelerometer to corect attitude for landing, if possible, or a way to manually input attitude adjustment
+- intregrator code
+- heartbeat and automatic check for out of bounds state vector abort contigencies
+- save blackbox log data - done
+- math/dynamic model of vehicle to get desired thrust, torque
