@@ -4,7 +4,7 @@
 config-pin P9.14 pwm
 config-pin P9.29 pwm
 config-pin P9.31 pwm
-config-pin P9.42 pwm
+config-pin P8.46 pwm
 config-pin P8.13 pwm
 config-pin P8.19 pwm
 config-pin P8.34 pwm
