@@ -31,11 +31,11 @@ def get_dis2():
 #get_gyroscope()
 #get_gravity()
 
-q = get_quaternion()
+#q = get_quaternion()
 #print(q[1])
-a = get_acceleration()
+#a = get_acceleration()
 #print(a[1])
-la = get_linear_acceleration()
+#la = get_linear_acceleration()
 #print(la[2])
 
 
@@ -50,3 +50,5 @@ async def get_frame():
 #print(asyncio.run(get_frame()))
 
 
+while 1:
+	print(asyncio.run(get_frame()))
