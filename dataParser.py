@@ -1,4 +1,5 @@
 # Data Parser
+import adafruit_bno055
 import IMU_Code
 from IMU_Code import *
 import HCSR04
