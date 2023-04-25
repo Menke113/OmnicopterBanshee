@@ -1,4 +1,4 @@
-from scipy.optimize import minimize, NonlinearConstraint, LinearConstraint
+from scipy.optimize import minimize, NonlinearConstraint, LinearConstraint, HessianUpdateStrategy, BFGS
 import numpy as np
 import time
 
@@ -135,17 +135,23 @@ def torque_constraint_motor8(x):
     return max_torque_motor_2806 - (k_t*(x[7]**2))
 
 
+bounds = [(0, None), (0, None)]
 
-b = (-w_max_2306, w_max_2306) # bounds are 0 to max angular rate of motors
-bnds1 = [b] * 4
+print(bounds)
 
 
-b = (-w_max_2806, w_max_2806) # bounds are 0 to max angular rate of motors
-bnds2 = [b] * 4
+bnds = [(-w_max_2306, w_max_2306), (-w_max_2306, w_max_2306), (-w_max_2306, w_max_2306), (-w_max_2306, w_max_2306), (-w_max_2806, w_max_2806), (-w_max_2806, w_max_2806), (-w_max_2806, w_max_2806), (-w_max_2806, w_max_2806)] # bounds are 0 to max angular rate of motors
+#bnds1 = b * 4
 
-bnds = np.concatenate((bnds1, bnds2))
 
-bnds = None
+#b = [(-w_max_2806, w_max_2806)] # bounds are 0 to max angular rate of motors
+#bnds2 = b * 4
+
+#bnds = np.concatenate((bnds1, bnds2))
+
+print(bnds)
+
+#bnds = None
 
 # print(bnds)
 # thrust_constraint = LinearConstraint((np.sum(k_t*(x[::2] - x[1::2]))), thrust_desired, thrust_desired)
@@ -155,35 +161,39 @@ bnds = None
 # constraint2 = NonlinearConstraint(torque_constraint)
 
 constraints = [{'type':'eq', 'fun':thrust_constraint_x},
-                {'type':'eq', 'fun':thrust_constraint_y},
-                {'type':'eq', 'fun':thrust_constraint_z},
-                {'type':'eq', 'fun':torque_constraint_x},
-                {'type':'eq', 'fun':torque_constraint_y},
-                {'type':'eq', 'fun':torque_constraint_z},
-                {'type':'ineq', 'fun':thrust_constraint_motor1},
-                {'type':'ineq', 'fun':thrust_constraint_motor2},          
-                {'type':'ineq', 'fun':thrust_constraint_motor3}, 
-                {'type':'ineq', 'fun':thrust_constraint_motor4},
-                {'type':'ineq', 'fun':thrust_constraint_motor5},
-                {'type':'ineq', 'fun':thrust_constraint_motor6},
-                {'type':'ineq', 'fun':thrust_constraint_motor7},
-                {'type':'ineq', 'fun':thrust_constraint_motor8}, 
-                {'type':'ineq', 'fun':torque_constraint_motor1},
-                {'type':'ineq', 'fun':torque_constraint_motor2},            
-                {'type':'ineq', 'fun':torque_constraint_motor3}, 
-                {'type':'ineq', 'fun':torque_constraint_motor4},
-                {'type':'ineq', 'fun':torque_constraint_motor5},
-                {'type':'ineq', 'fun':torque_constraint_motor6},
-                {'type':'ineq', 'fun':torque_constraint_motor7},
-                {'type':'ineq', 'fun':torque_constraint_motor8}]
+               {'type':'eq', 'fun':thrust_constraint_y},
+               {'type':'eq', 'fun':thrust_constraint_z},
+               {'type':'eq', 'fun':torque_constraint_x},
+               {'type':'eq', 'fun':torque_constraint_y},
+               {'type':'eq', 'fun':torque_constraint_z},
+               {'type':'ineq', 'fun':thrust_constraint_motor1},
+               {'type':'ineq', 'fun':thrust_constraint_motor2},
+               {'type':'ineq', 'fun':thrust_constraint_motor3},
+               {'type':'ineq', 'fun':thrust_constraint_motor4},
+               {'type':'ineq', 'fun':thrust_constraint_motor5},
+               {'type':'ineq', 'fun':thrust_constraint_motor6},
+               {'type':'ineq', 'fun':thrust_constraint_motor7},
+               {'type':'ineq', 'fun':thrust_constraint_motor8},
+               {'type':'ineq', 'fun':torque_constraint_motor1},
+               {'type':'ineq', 'fun':torque_constraint_motor2},
+               {'type':'ineq', 'fun':torque_constraint_motor3},
+               {'type':'ineq', 'fun':torque_constraint_motor4},
+               {'type':'ineq', 'fun':torque_constraint_motor5},
+               {'type':'ineq', 'fun':torque_constraint_motor6},
+               {'type':'ineq', 'fun':torque_constraint_motor7},
+               {'type':'ineq', 'fun':torque_constraint_motor8}]
 
-# print(constraints)
+print(constraints)
 
-# hess = lambda x: np.zeros(16)
+#hess = lambda x: [0] * 8
+
+#hess = BFGS()
+
+#print(hess(x))
 
 start = time.time()
 
-sol = minimize(objective, x, method='trust-constr', bounds=bnds, constraints=constraints, options={'gtol': 1e-8})
+sol = minimize(objective, xp, method='trust-constr', bounds=bnds, constraints=constraints, options={'gtol': 1e-8}) #, jac = '2-point', hess = hess)
 
 end = time.time()
 
