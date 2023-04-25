@@ -4,30 +4,34 @@ import time
 
 # get python PID library
 
-w_max_2306 = 2000 # max angular rate of 2306 motors, rad/s
-w_max_2806 = 2900 # max angular rate of 2806 motors, rad/s
+# w_max_2306 = 2000 # max angular rate of 2306 motors, rad/s
+# w_max_2806 = 2900 # max angular rate of 2806 motors, rad/s
+
+w_max_2306 = 200000000 # max angular rate of 2306 motors, rad/s
+w_max_2806 = 290000000 # max angular rate of 2806 motors, rad/s
 
 max_thrust_motor_2306 = 1200 * 0.009806652 # max thrust of an individual 2306 motor in grams to Newtons - should be scaled by throttle input (Rx_chan[2])
 max_thrust_motor_2806 = 1600 * 0.009806652 # max thrust of an individual 2806 motor in grams to Newtons - this is an estimate - should be scaled by throttle input (Rx_chan[2])
 max_torque_motor_2306 = 2e7 # torque, N * mm
 max_torque_motor_2806 = 2.9e7 # torque, N * mm
 
-rng = np.random.default_rng()
-rng.random()
-xp = rng.random(8) * w_max_2306
+rng = np.random.uniform(-1.0,1.0)
+# print(rng)
+# rng.random()
+xp = rng * w_max_2306
 x = np.zeros(8)
 
-thrust_desired_x = rng.random() * 2000 * 0.009806652 # get these from from the dynamics function
-torque_desired_x = rng.random() * 200 * 0.009806652
-thrust_desired_y = rng.random() * 2000 * 0.009806652
-torque_desired_y = rng.random() * 200 * 0.009806652
-thrust_desired_z = rng.random() * 2000 * 0.009806652
-torque_desired_z = rng.random() * 200 * 0.009806652
+thrust_desired_x = rng * 1000 * 0.009806652 # get these from from the dynamics function
+torque_desired_x = rng * 10 * 0.009806652
+thrust_desired_y = rng * 1000 * 0.009806652
+torque_desired_y = rng * 10 * 0.009806652
+thrust_desired_z = rng * 1000 * 0.009806652
+torque_desired_z = rng * 10 * 0.009806652
 
 
-print(thrust_desired_x)
-print(thrust_desired_y)
-print(thrust_desired_z)
+print(thrust_desired_x * (1/0.009806))
+print(thrust_desired_y * (1/0.009806))
+print(thrust_desired_z * (1/0.009806))
 
 print(torque_desired_x)
 print(torque_desired_y)
@@ -51,6 +55,7 @@ def objective(x): # x is new 16D vector of w's, xp is prev 16D vector of w's
 # constraints to achieve the correct thrust and torque components
 
 def thrust_constraint_x(x): # this only does total thrust and total torque, must break up into three dimensions
+    # print("boo")
     return ((k_t * x[4]**2) * np.sign(x[4])) + ((k_t * x[5]**2) * np.sign(x[5])) - thrust_desired_x
 
 def torque_constraint_x(x): # torque from just the thrust forces, not including moments from the props
@@ -172,6 +177,8 @@ constraints = [{'type':'eq', 'fun':thrust_constraint_x},
                 {'type':'ineq', 'fun':torque_constraint_motor7},
                 {'type':'ineq', 'fun':torque_constraint_motor8}]
 
+# print(constraints)
+
 # hess = lambda x: np.zeros(16)
 
 start = time.time()
@@ -196,5 +203,7 @@ print(torque_constraint_y(sol.x))
 print(torque_constraint_z(sol.x))
 
 # print(objective(sol.x))
+
+# must map from omegas to throttle to command (duty cycle)
 
 
