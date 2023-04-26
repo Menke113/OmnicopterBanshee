@@ -1,4 +1,5 @@
 # Data Parser
+import adafruit_bno055
 import IMU_Code
 from IMU_Code import *
 import HCSR04
@@ -50,5 +51,4 @@ async def get_frame():
 #print(asyncio.run(get_frame()))
 
 
-while 1:
-	print(asyncio.run(get_frame()))
+
