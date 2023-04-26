@@ -6,6 +6,7 @@ import time
 
 print('\n \n \n')
 
+
 w_max_2306 = 2000 # max angular rate of 2306 motors, rad/s
 w_max_2806 = 2900 # max angular rate of 2806 motors, rad/s
 
@@ -32,6 +33,9 @@ thrust_desired_y = np.random.uniform(-1.0,1.0) * 2000 * 0.009806652
 torque_desired_y = np.random.uniform(-1.0,1.0) * 16
 thrust_desired_z = np.random.uniform(-1.0,1.0) * 2000 * 0.009806652
 torque_desired_z = np.random.uniform(-1.0,1.0) * 16
+
+# T = [thrust_desired_x, thrust_desired_y, thrust_desired_z, torque_desired_x, torque_desired_y, torque_desired_z]
+
 
 print('desired thrusts: ')
 print(thrust_desired_x)
