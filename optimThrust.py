@@ -2,7 +2,8 @@ from scipy.optimize import minimize, NonlinearConstraint, LinearConstraint, Hess
 import numpy as np
 import time
 from optim8D import *
-
+import dynamicsModel as dm
+from dm import *
 # get python PID library
 
 print('\n \n \n')
@@ -26,7 +27,10 @@ max_torque_motor_2806 = 60 # torque, N * mm
 # np.random.uniform(-1.0,1.0) * w_max_2806, np.random.uniform(-1.0,1.0) * w_max_2806, np.random.uniform(-1.0,1.0) * w_max_2806, np.random.uniform(-1.0,1.0) * w_max_2806]
 
 x = np.zeros(8)
-
+print("here")
+T = asyncio.run(get_T())
+print(T)
+"""
 thrust_desired_x = np.random.uniform(-1.0,1.0) * 2000 * 0.009806652 # get these from the dynamics function
 torque_desired_x = np.random.uniform(-1.0,1.0) * 16
 thrust_desired_y = np.random.uniform(-1.0,1.0) * 2000 * 0.009806652
@@ -35,7 +39,7 @@ thrust_desired_z = np.random.uniform(-1.0,1.0) * 2000 * 0.009806652
 torque_desired_z = np.random.uniform(-1.0,1.0) * 16
 
 T = [thrust_desired_x, thrust_desired_y, thrust_desired_z, torque_desired_x, torque_desired_y, torque_desired_z]
-
+"""
 xp_quadratic = optim_quadratic_8D(T)
 
 k_t = max_thrust_motor_2306/(w_max_2306**2)

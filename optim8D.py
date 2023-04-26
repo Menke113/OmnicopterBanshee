@@ -2,8 +2,8 @@ from scipy.optimize import minimize, NonlinearConstraint, LinearConstraint, Hess
 import numpy as np
 import time
 
-print(thrust_desired_y * (1/0.009806))
-print(thrust_desired_z * (1/0.009806))
+#print(thrust_desired_y * (1/0.009806))
+#print(thrust_desired_z * (1/0.009806))
 
 def optim_quadratic_8D(T):
 

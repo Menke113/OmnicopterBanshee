@@ -1,5 +1,5 @@
 #IMU
-import #IMU
+#import IMU
 import adafruit_bno055
 import board
 import time
