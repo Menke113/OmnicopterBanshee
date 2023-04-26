@@ -1,4 +1,4 @@
-- get the code to initialize the ESCs integrated
+- get the code to initialize the ESCs integrated - done
 - make loop that checks for the arming signal (throttle down + switch flip triggers the ESCs to be initialized)
 optimization formulations: linear, quadratic, and paired quadratic + linear with extra constraints added to keep omegas the same for
 motor pairs
@@ -11,4 +11,4 @@ motor pairs
 - intregrator code
 - heartbeat and automatic check for out of bounds state vector abort contigencies
 - save blackbox log data - done
-- math/dynamic model of vehicle to get desired thrust, torque
+- math/dynamic model of vehicle to get desired thrust, torque -done
