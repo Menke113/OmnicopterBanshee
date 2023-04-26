@@ -5,9 +5,6 @@ import numpy as np
 
 def PID(cur_val, des_val, prev_error, Kp, Ki, Kd):
 
-    # Get the current velocity of the drone
-    current_state = drone.get_velocity()
-
     # Calculate the error between the setpoint and the current velocity
     error = np.abs(des_val - cur_val)
 
@@ -18,7 +15,7 @@ def PID(cur_val, des_val, prev_error, Kp, Ki, Kd):
     derivative = error - prev_error
 
     # Compute the new acceleration using the PID controller
-    return Kp * error + Ki * integral + Kd * derivative
+    return [Kp * error + Ki * integral + Kd * derivative, error]
 
 
 
