@@ -9,14 +9,14 @@ import asyncio
 from IMU_Code import *
 from PID import *
 from optim8D import *
-from optimThrust import *
+from optimThrust_BBB import *
 from dynamicsModel import *
 from arm_condition import *
 
 
 def control_loop():
 
-    loop_timestep_optimTrust = 0.05 # 
+    loop_timestep_optimThrust = 0.1
 
     motorPin1 = "P8_34"
     motorPin2 = "P9_29"
@@ -27,7 +27,6 @@ def control_loop():
     motorPin7 = "P8_19"
     motorPin8 = "P9_14"
 
-    
     max_yaw = 1 # max yaw rate, rad/s
     max_roll = 1 # max roll rate, rad/s
     max_pitch = 1 # max pitch rate, rad/s
@@ -48,6 +47,10 @@ def control_loop():
     max_thrust_motor_2806 = 1600 * 0.009806652 # grams to Newtons
 
     max_thrusts = [max_thrust_motor_2306, max_thrust_motor_2306, max_thrust_motor_2306, max_thrust_motor_2306, max_thrust_motor_2806, max_thrust_motor_2806, max_thrust_motor_2806, max_thrust_motor_2806]
+
+    omegas = [0] * 8
+
+    begin = time.start()
 
     while(1):
 
@@ -120,49 +123,42 @@ def control_loop():
 
         # run through a PID loop for each DOF:
 
-        PID_x = PID(linvel[0], des_x, prev_error_x, 1, 1, 1)
+        PID_x = PID(linvel[0], des_x, prev_error_x, 8.5, 1.1, 1)
         xlinc = PID_x[0] # controller output for linear x DOF
         prev_error_x = PID_x[1]
 
-        PID_y = PID(linvel[1], des_y, prev_error_y, 1, 1, 1)
+        PID_y = PID(linvel[1], des_y, prev_error_y, 8.5, 1.1, 1)
         ylinc = PID_y[0] # controller output for linear y DOF
         prev_error_y = PID_y[1]
 
-        PID_z = PID(linvel[2], des_z, prev_error_z, 1, 1, 1)
+        PID_z = PID(linvel[2], des_z, prev_error_z, 8.5, 1.1, 1)
         zlinc = PID_z[0] # controller output for linear z DOF
         prev_error_z = PID_z[1]
 
-        PID_yaw = PID(psi, des_yaw, prev_error_yaw, 1, 1, 1)
+        PID_yaw = PID(psi, des_yaw, prev_error_yaw, 3, 2, 0.75)
         yawc = PID_yaw[0] # controller output for yaw DOF
         prev_error_yaw = PID_yaw[1]
 
-        PID_roll = PID(phi, des_roll, prev_error_roll, 1, 1, 1)
+        PID_roll = PID(phi, des_roll, prev_error_roll, 3, 2, 0.75)
         rollc = PID_roll[0] # controller output for roll DOF
         prev_error_roll = PID_roll[1]
 
-        PID_pitch = PID(theta, des_pitch, prev_error_pitch, 1, 1, 1)
+        PID_pitch = PID(theta, des_pitch, prev_error_pitch, 3, 2, 0.75)
         pitchc = PID_pitch[0] # controller output for pitch DOF
         prev_error_pitch = PID_pitch[1]
 
         accel_mods = [xlinc, ylinc, zlinc, yawc, rollc, pitchc]
 
         # now that we have controller outputs, call dynamics function with the inputted desired accelerations scaled by the controller outputs:
-        T = dynamicsModel(accel_mods)
+        # print("here")
+        T = asyncio.run(get_T())
+        # print(T)
 
         # call optimization to get desired angular velocities of motors
 
-        if i % 100 == 0 or i == 0:
-            omegas = optim_quadratic_8D(T, max_thrusts, omegas, loop_timestep_optimTrust)
-
-            omegas_squared = [w**2 * np.sign(w) for w in omegas]
-            thrusts = k_t * omegas_squared
-            throttles = thrusts/max_thrusts
-            duty_cycles = throttles * 25 + 75
-
-        else:
-            thrusts = optim_thrust(T, max_thrusts, omegas)
-            throttles = thrusts/max_thrusts
-            duty_cycles = throttles * 25 + 75
+        thrusts = optim_thrust(T, max_thrusts, omegas)
+        throttles = thrusts/max_thrusts
+        duty_cycles = throttles * 25 + 75
 
         # now back out throttle level from desired omegas of the motors and command this throttle level to the motors
         
@@ -174,5 +170,11 @@ def control_loop():
         PWM.set_duty_cycle(motorPin6, duty_cycles[5])
         PWM.set_duty_cycle(motorPin7, duty_cycles[6])
         PWM.set_duty_cycle(motorPin8, duty_cycles[7])
+        
+        end = time.end()
 
         i += 1
+
+        if i % 100 == 0:
+            i = 0
+            print(end - begin)

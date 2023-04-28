@@ -2,9 +2,10 @@ from scipy.optimize import minimize, NonlinearConstraint, LinearConstraint, Hess
 import numpy as np
 import time
 
+
 def optim_quadratic_8D(T):
 
-    # print('Optim8D Ran')
+    print('Optim8D Ran')
 
     w_max_2306 = 2000 # max angular rate of 2306 motors, rad/s
     w_max_2806 = 2900 # max angular rate of 2806 motors, rad/s
@@ -25,12 +26,7 @@ def optim_quadratic_8D(T):
 
     x = np.zeros(8)
 
-    # thrust_desired_x = np.random.uniform(-1.0,1.0) * 2000 * 0.009806652 # get these from from the dynamics function
-    # torque_desired_x = np.random.uniform(-1.0,1.0) * 1e7 * 0.009806652
-    # thrust_desired_y = np.random.uniform(-1.0,1.0) * 2000 * 0.009806652
-    # torque_desired_y = np.random.uniform(-1.0,1.0) * 1e7 * 0.009806652
-    # thrust_desired_z = np.random.uniform(-1.0,1.0) * 2000 * 0.009806652
-    # torque_desired_z = np.random.uniform(-1.0,1.0) * 1e7 * 0.009806652
+
 
     # k_t = 0.006 # thrust coefficient, using N and rad/s
     k_t = max_thrust_motor_2306/(w_max_2306**2)
@@ -87,46 +83,46 @@ def optim_quadratic_8D(T):
     #                {'type':'ineq', 'fun':torque_constraint_motor8}]
 
                 # thrust constraint in x axis: 
-    constraints = [{'type':'eq', 'fun':lambda x: ((k_t * x[4]**2) * np.sign(x[4])) + ((k_t * x[5]**2) * np.sign(x[5])) - T[0]},
+    constraints = [NonlinearConstraint(lambda x: ((k_t * x[4]**2) * np.sign(x[4])) + ((k_t * x[5]**2) * np.sign(x[5])) - T[0], -0.1, 0.1),
                 
                 # thrust constraint in y axis:
-                {'type':'eq', 'fun':lambda x: ((k_t * x[6]**2) * np.sign(x[6])) + ((k_t * x[7]**2) * np.sign(x[7])) - T[1]},
+                NonlinearConstraint(lambda x: ((k_t * x[6]**2) * np.sign(x[6])) + ((k_t * x[7]**2) * np.sign(x[7])) - T[1], -0.1, 0.1),
 
                 # thrust constraint in z axis:
-                {'type':'eq', 'fun':lambda x: ((k_t * x[0]**2) * np.sign(x[0])) + ((k_t * x[1]**2) * np.sign(x[1])) + ((k_t * x[2]**2) * np.sign(x[2])) + ((k_t * x[3]**2) * np.sign(x[3])) - T[2]},
+                NonlinearConstraint(lambda x: ((k_t * x[0]**2) * np.sign(x[0])) + ((k_t * x[1]**2) * np.sign(x[1])) + ((k_t * x[2]**2) * np.sign(x[2])) + ((k_t * x[3]**2) * np.sign(x[3])) - T[2], -0.1, 0.1),
 
                 # torque constraint in x axis:
-                {'type':'eq', 'fun':lambda x: - (I * ((x[4] - xp[4])/timestep)) - (I * ((x[5] - xp[5])/timestep)) \
+                NonlinearConstraint(lambda x: - (I * ((x[4] - xp[4])/timestep)) - (I * ((x[5] - xp[5])/timestep)) \
                     + (np.sqrt(2)/2 * a * ((k_t * x[0]**2) * np.sign(x[0]))) + (np.sqrt(2)/2 * a * ((k_t * x[2]**2) * np.sign(x[2]))) \
-                    - (np.sqrt(2)/2 * a * ((k_t * x[1]**2) * np.sign(x[1]))) - (np.sqrt(2)/2 * a * ((k_t * x[3]**2) * np.sign(x[3]))) - T[3]},
+                    - (np.sqrt(2)/2 * a * ((k_t * x[1]**2) * np.sign(x[1]))) - (np.sqrt(2)/2 * a * ((k_t * x[3]**2) * np.sign(x[3]))) - T[3], -1e-4, 1e-4),
 
                 # torque constraint in y axis:
-                {'type':'eq', 'fun':lambda x: - (I * ((x[6] - xp[6])/timestep)) - (I * ((x[7] - xp[7])/timestep)) \
+                NonlinearConstraint(lambda x: - (I * ((x[6] - xp[6])/timestep)) - (I * ((x[7] - xp[7])/timestep)) \
                     + (np.sqrt(2)/2 * a * ((k_t * x[0]**2) * np.sign(x[0]))) + (np.sqrt(2)/2 * a * ((k_t * x[1]**2) * np.sign(x[1]))) \
-                    - (np.sqrt(2)/2 * a * ((k_t * x[2]**2) * np.sign(x[2]))) - (np.sqrt(2)/2 * a * ((k_t * x[3]**2) * np.sign(x[3]))) - T[4]},
+                    - (np.sqrt(2)/2 * a * ((k_t * x[2]**2) * np.sign(x[2]))) - (np.sqrt(2)/2 * a * ((k_t * x[3]**2) * np.sign(x[3]))) - T[4], -1e-4, 1e-4),
 
                 # torque constraint in z axis:
-                {'type':'eq', 'fun':lambda x: - (I * ((x[0] - xp[0])/timestep)) - (I * ((x[1] - xp[1])/timestep)) - (I * ((x[2] - xp[2])/timestep)) - (I * ((x[3] - xp[3])/timestep)) - T[5]},
+                NonlinearConstraint(lambda x: - (I * ((x[0] - xp[0])/timestep)) - (I * ((x[1] - xp[1])/timestep)) - (I * ((x[2] - xp[2])/timestep)) - (I * ((x[3] - xp[3])/timestep)) - T[5], -1e-4, 1e-4),
 
                 # max thrust constraints for all motors:
-                {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - (k_t*(x[0]**2))},
-                {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - (k_t*(x[1]**2))},
-                {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - (k_t*(x[2]**2))},
-                {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - (k_t*(x[3]**2))},
-                {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - (k_t*(x[4]**2))},
-                {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - (k_t*(x[5]**2))},
-                {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - (k_t*(x[6]**2))},
-                {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - (k_t*(x[7]**2))},
+                NonlinearConstraint(lambda x: max_thrust_motor_2306 - (k_t*(x[0]**2)), -0.05, 0.05),
+                NonlinearConstraint(lambda x: max_thrust_motor_2306 - (k_t*(x[1]**2)), -0.05, 0.05),
+                NonlinearConstraint(lambda x: max_thrust_motor_2306 - (k_t*(x[2]**2)), -0.05, 0.05),
+                NonlinearConstraint(lambda x: max_thrust_motor_2306 - (k_t*(x[3]**2)), -0.05, 0.05),
+                NonlinearConstraint(lambda x: max_thrust_motor_2806 - (k_t*(x[4]**2)), -0.05, 0.05),
+                NonlinearConstraint(lambda x: max_thrust_motor_2806 - (k_t*(x[4]**2)), -0.05, 0.05),
+                NonlinearConstraint(lambda x: max_thrust_motor_2806 - (k_t*(x[6]**2)), -0.05, 0.05),
+                NonlinearConstraint(lambda x: max_thrust_motor_2806 - (k_t*(x[7]**2)), -0.05, 0.05),
 
                 # max torque constraint for all motors:
-                {'type':'ineq', 'fun':lambda x: max_torque_motor_2306 - (I * ((x[0] - xp[0])/timestep))},
-                {'type':'ineq', 'fun':lambda x: max_torque_motor_2306 - (I * ((x[1] - xp[1])/timestep))},
-                {'type':'ineq', 'fun':lambda x: max_torque_motor_2306 - (I * ((x[2] - xp[2])/timestep))},
-                {'type':'ineq', 'fun':lambda x: max_torque_motor_2306 - (I * ((x[3] - xp[3])/timestep))},
-                {'type':'ineq', 'fun':lambda x: max_torque_motor_2306 - (I * ((x[4] - xp[4])/timestep))},
-                {'type':'ineq', 'fun':lambda x: max_torque_motor_2306 - (I * ((x[5] - xp[5])/timestep))},
-                {'type':'ineq', 'fun':lambda x: max_torque_motor_2306 - (I * ((x[6] - xp[6])/timestep))},
-                {'type':'ineq', 'fun':lambda x: max_torque_motor_2306 - (I * ((x[7] - xp[7])/timestep))}]
+                NonlinearConstraint(lambda x: max_torque_motor_2306 - (I * ((x[0] - xp[0])/timestep)), -1e-4, 1e-4),
+                NonlinearConstraint(lambda x: max_torque_motor_2306 - (I * ((x[0] - xp[0])/timestep)), -1e-4, 1e-4),
+                NonlinearConstraint(lambda x: max_torque_motor_2306 - (I * ((x[0] - xp[0])/timestep)), -1e-4, 1e-4),
+                NonlinearConstraint(lambda x: max_torque_motor_2306 - (I * ((x[0] - xp[0])/timestep)), -1e-4, 1e-4),
+                NonlinearConstraint(lambda x: max_torque_motor_2306 - (I * ((x[0] - xp[0])/timestep)), -1e-4, 1e-4),
+                NonlinearConstraint(lambda x: max_torque_motor_2306 - (I * ((x[0] - xp[0])/timestep)), -1e-4, 1e-4),
+                NonlinearConstraint(lambda x: max_torque_motor_2306 - (I * ((x[0] - xp[0])/timestep)), -1e-4, 1e-4),
+                NonlinearConstraint(lambda x: max_torque_motor_2306 - (I * ((x[0] - xp[0])/timestep)), -1e-4, 1e-4)]
 
     #hess = lambda x: [0] * 8
 
