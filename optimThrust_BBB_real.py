@@ -2,13 +2,8 @@ from scipy.optimize import minimize, NonlinearConstraint, LinearConstraint, Hess
 import numpy as np
 import time
 from optim8D import *
-<<<<<<< HEAD
-import dynamicsModel
-from dynamicsModel import *
-=======
 # import dynamicsModel as dm
 # from dm import *
->>>>>>> d4c82bf90e5c080cd743661bc480bb06334cae82
 # get python PID library
 
 
@@ -27,17 +22,11 @@ def optim_thrust(T, max_thrusts, xp):
     max_torque_motor_2306 = 40 # torque, N * mm
     max_torque_motor_2806 = 60 # torque, N * mm
 
-<<<<<<< HEAD
-T = [thrust_desired_x, thrust_desired_y, thrust_desired_z, torque_desired_x, torque_desired_y, torque_desired_z]
-"""
-#xp_quadratic = optim_quadratic_8D(T)
-=======
     # rng = np.random.uniform(-1.0,1.0)
     # print(rng)
     # rng.random()
     # xp_quadratic = [np.random.uniform(-0.1,0.1) * xp[1], np.random.uniform(-1.0,1.0) * w_max_2306, np.random.uniform(-1.0,1.0) * w_max_2306, np.random.uniform(-1.0,1.0) * w_max_2306, 
     # np.random.uniform(-1.0,1.0) * w_max_2806, np.random.uniform(-1.0,1.0) * w_max_2806, np.random.uniform(-1.0,1.0) * w_max_2806, np.random.uniform(-1.0,1.0) * w_max_2806]
->>>>>>> d4c82bf90e5c080cd743661bc480bb06334cae82
 
     x = np.zeros(8)
     # print("here")
