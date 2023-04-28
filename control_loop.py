@@ -16,6 +16,8 @@ from arm_condition import *
 
 def control_loop():
 
+    loop_timestep_optimTrust = 0.05 # 
+
     motorPin1 = "P8_34"
     motorPin2 = "P9_29"
     motorPin3 = "P8_13"
@@ -150,7 +152,7 @@ def control_loop():
         # call optimization to get desired angular velocities of motors
 
         if i % 100 == 0 or i == 0:
-            omegas = optim_quadratic_8D(T, max_thrusts, omegas, timestep)
+            omegas = optim_quadratic_8D(T, max_thrusts, omegas, loop_timestep_optimTrust)
 
             omegas_squared = [w**2 * np.sign(w) for w in omegas]
             thrusts = k_t * omegas_squared

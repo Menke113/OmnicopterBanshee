@@ -4,7 +4,7 @@ import time
 
 def optim_quadratic_8D(T):
 
-    print('Optim8D Ran')
+    # print('Optim8D Ran')
 
     w_max_2306 = 2000 # max angular rate of 2306 motors, rad/s
     w_max_2806 = 2900 # max angular rate of 2806 motors, rad/s
