@@ -9,7 +9,7 @@ from optim8D import *
 
 def optim_thrust(T, max_thrusts, xp):
 
-    print('Optim Thrust Ran')
+    # print('Optim Thrust Ran')
 
     w_max_2306 = 2000 # max angular rate of 2306 motors, rad/s
     w_max_2806 = 2900 # max angular rate of 2806 motors, rad/s
@@ -148,36 +148,36 @@ def optim_thrust(T, max_thrusts, xp):
                 # thrust constraint in x axis: 
     # constraints = [{'type':'eq', 'fun':lambda x: (x[4] + x[5]) - T[0]},
 
-    constraints = [NonlinearConstraint(lambda x: (x[4] + x[5]) - T[0], 0, 0),
+    constraints = [NonlinearConstraint(lambda x: (x[4] + x[5]) - T[0], -0.1, 0.1),
                 
                 # thrust constraint in y axis:
-                NonlinearConstraint(lambda x: (x[6] + x[7]) - T[1], 0, 0),
+                NonlinearConstraint(lambda x: (x[6] + x[7]) - T[1], -0.1, 0.1),
 
                 # thrust constraint in z axis:
-                NonlinearConstraint(lambda x: (x[0] + x[1] + x[2] + x[3]) - T[2], 0, 0),
+                NonlinearConstraint(lambda x: (x[0] + x[1] + x[2] + x[3]) - T[2], -0.1, 0.1),
 
                 # torque constraint in x axis:
                 NonlinearConstraint(lambda x:
                     + (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[2]) \
-                    - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3]) - T[3], 0, 0),
+                    - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3]) - T[3], -1e-4, 1e-4),
 
                 # torque constraint in y axis:
                 NonlinearConstraint(lambda x:
                     + (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[1]) \
-                    - (np.sqrt(2)/2 * a * x[2]) - (np.sqrt(2)/2 * a * x[3]) - T[4], 0, 0),
+                    - (np.sqrt(2)/2 * a * x[2]) - (np.sqrt(2)/2 * a * x[3]) - T[4], -1e-4, 1e-4)]
 
                 # torque constraint in z axis:
                 # NonlinearConstraint(lambda x: np.sum(x[:4] - xp[:4]) - T[5], -1e-2, 1e-2),
 
                 # max thrust constraints for all motors:
-                NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[1] - np.abs(x[1]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[2] - np.abs(x[2]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[3] - np.abs(x[3]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[4] - np.abs(x[4]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[5] - np.abs(x[5]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[6] - np.abs(x[6]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[7] - np.abs(x[7]), 0, np.inf)]
+                # NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf),
+                # NonlinearConstraint(lambda x: max_thrusts[1] - np.abs(x[1]), 0, np.inf),
+                # NonlinearConstraint(lambda x: max_thrusts[2] - np.abs(x[2]), 0, np.inf),
+                # NonlinearConstraint(lambda x: max_thrusts[3] - np.abs(x[3]), 0, np.inf),
+                # NonlinearConstraint(lambda x: max_thrusts[4] - np.abs(x[4]), 0, np.inf),
+                # NonlinearConstraint(lambda x: max_thrusts[5] - np.abs(x[5]), 0, np.inf),
+                # NonlinearConstraint(lambda x: max_thrusts[6] - np.abs(x[6]), 0, np.inf),
+                # NonlinearConstraint(lambda x: max_thrusts[7] - np.abs(x[7]), 0, np.inf)]
 
     # print(constraints)
 
@@ -187,9 +187,9 @@ def optim_thrust(T, max_thrusts, xp):
 
     # print(constraints)
 
-    #hess = lambda x: [0] * 8
+    hess = lambda x: [0] * 8
 
-    hess = BFGS()
+    # hess = BFGS()
 
     #print(hess(x))
 
@@ -204,10 +204,9 @@ def optim_thrust(T, max_thrusts, xp):
 
     # print(k_t)
 
-    sol = minimize(lambda x: np.sum(x), xp, method='trust-constr', bounds=bnds, constraints=constraints, options={'maxiter' : 200}, jac = '2-point', hess = hess)
+    sol = minimize(lambda x: np.sum(x), xp, method='trust-constr', bounds=bnds, constraints=constraints, options={'maxiter' : 200, 'gtol' : 1e-2, 'xtol' : 1e-2, 'barrier_tol' : 1e-2}, jac = '2-point', hess = hess)
 
     #return sol.x
-
 
     # end = time.time()
 

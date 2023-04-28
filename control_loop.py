@@ -27,9 +27,9 @@ def control_loop():
     motorPin7 = "P8_19"
     motorPin8 = "P9_14"
 
-    max_yaw = 1 # max yaw rate, rad/s
-    max_roll = 1 # max roll rate, rad/s
-    max_pitch = 1 # max pitch rate, rad/s
+    max_yaw = 100 # max yaw rate, rad/s
+    max_roll = 100 # max roll rate, rad/s
+    max_pitch = 100 # max pitch rate, rad/s
 
     des_x = 0
     des_y = 0
@@ -66,9 +66,11 @@ def control_loop():
 
     begin = time.time()
 
+    prev_switch5 = 0
+
     while(1):
 
-        print('Control Loop Ran')
+        # print('Control Loop Ran')
 
         if Rx_chan[4] < 1800:
             duty_cycle = 75
@@ -93,52 +95,55 @@ def control_loop():
         des_roll = s3 * max_roll
         des_pitch = s2 * max_pitch
 
-        # set desired x velocity:
-        if Rx_chan[5] > 1800 and Rx_chan[4] != prev_switch4:
+        prev_switch5 = 
 
-            if Rx_chan[4] > 1800 and Rx_chan[4]:
+        # set desired x velocity:
+        if Rx_chan[6] > 1800 and Rx_chan[5] != prev_switch5 and i != 0:
+
+            if Rx_chan[5] > 1800 and Rx_chan[5]:
                 print('Set des_x to 100')
                 des_x = 100 # 100 mm/s
 
-            if Rx_chan[4] < 1800 and Rx_chan[4] > 250:
+            if Rx_chan[5] < 1800 and Rx_chan[5] > 250:
                 print('Set des_x to 0')
                 des_x = 0 # 100 mm/s
 
-            if Rx_chan[4] < 250:
+            if Rx_chan[5] < 250:
                 print('Set des_x to -100')
                 des_x = -100 # 100 mm/s
 
         # set desired y velocity:
-        if Rx_chan[5] < 1800 and Rx_chan[5] > 250 and Rx_chan[4] != prev_switch4:
+        if Rx_chan[6] < 1800 and Rx_chan[6] > 250 and Rx_chan[5] != prev_switch5 and i != 0:
 
-            if Rx_chan[4] > 1800:
+            if Rx_chan[5] > 1800:
                 print('Set des_y to 100')
                 des_y = 100 # 100 mm/s
 
-            if Rx_chan[4] < 1800 and Rx_chan[4] > 250:
+            if Rx_chan[5] < 1800 and Rx_chan[4] > 250:
                 print('Set des_y to 0')
                 des_y = 0 # 100 mm/s
 
-            if Rx_chan[4] < 250:
+            if Rx_chan[5] < 250:
                 print('Set des_y to -100')
                 des_y = -100 # 100 mm/s
 
         # set desired z velocity:
-        if Rx_chan[5] < 250 and Rx_chan[4] != prev_switch4:
+        if Rx_chan[6] < 250 and Rx_chan[5] != prev_switch5 and i != 0:
 
-            if Rx_chan[4] > 1800:
+            if Rx_chan[5] > 1800:
                 print('Set des_z to 100')
                 des_z = 100 # 100 mm/s
 
-            if Rx_chan[4] < 1800 and Rx_chan[4] > 250:
+            if Rx_chan[5] < 1800 and Rx_chan[5] > 250:
                 print('Set des_z to 0')
                 des_z = 0 # 100 mm/s
 
-            if Rx_chan[4] < 250:
+            if Rx_chan[5] < 250:
                 print('Set des_z to -100')
                 des_z = -100 # 100 mm/s
 
-        prev_switch4 = Rx_chan[4]
+        # prev_switch4 = Rx_chan[4]
+        prev_switch5 = Rx_chan[5]
         
         linvel = get_linearVelocity()
         
