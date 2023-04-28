@@ -9,7 +9,7 @@ from optim8D import *
 
 def optim_thrust(T, max_thrusts, xp):
 
-    print('\n \n \n')
+    print('Optim Thrust Ran')
 
     w_max_2306 = 2000 # max angular rate of 2306 motors, rad/s
     w_max_2806 = 2900 # max angular rate of 2806 motors, rad/s
@@ -98,14 +98,18 @@ def optim_thrust(T, max_thrusts, xp):
     # bnds = [(-w_max_2306, w_max_2306), (-w_max_2306, w_max_2306), (-w_max_2306, w_max_2306), (-w_max_2306, w_max_2306), (-w_max_2806, w_max_2806), (-w_max_2806, w_max_2806), (-w_max_2806, w_max_2806), (-w_max_2806, w_max_2806)] # bounds are 0 to max angular rate of motors
     #bnds1 = b * 4
 
-    bnds = [(-np.inf, np.inf)] * 8
-    print('bnds: ')
-    print(bnds)
+    #bnds = [(-np.inf, np.inf)] * 8
+    #print('bnds: ')
+    #print(bnds)
 
     #b = [(-w_max_2806, w_max_2806)] # bounds are 0 to max angular rate of motors
     #bnds2 = b * 4
 
     #bnds = np.concatenate((bnds1, bnds2))
+
+    bnds1 = [(-max_thrusts[0],max_thrusts[0])] * 4
+    bnds2 = [(-max_thrusts[4],max_thrusts[4])] * 4
+    bnds = np.concatenate((bnds1, bnds2))
 
     # print(bnds)
 
@@ -144,36 +148,36 @@ def optim_thrust(T, max_thrusts, xp):
                 # thrust constraint in x axis: 
     # constraints = [{'type':'eq', 'fun':lambda x: (x[4] + x[5]) - T[0]},
 
-    constraints = [NonlinearConstraint(lambda x: (x[4] + x[5]) - T[0], -0.1, 0.1),
+    constraints = [NonlinearConstraint(lambda x: (x[4] + x[5]) - T[0], 0, 0),
                 
                 # thrust constraint in y axis:
-                NonlinearConstraint(lambda x: (x[4] + x[5]) - T[1], -0.1, 0.1),
+                NonlinearConstraint(lambda x: (x[6] + x[7]) - T[1], 0, 0),
 
                 # thrust constraint in z axis:
-                NonlinearConstraint(lambda x: (x[4] + x[5]) - T[2], -0.1, 0.1),
+                NonlinearConstraint(lambda x: (x[0] + x[1] + x[2] + x[3]) - T[2], 0, 0),
 
                 # torque constraint in x axis:
                 NonlinearConstraint(lambda x:
                     + (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[2]) \
-                    - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3]) - T[3], -1e-4, 1e-4),
+                    - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3]) - T[3], 0, 0),
 
                 # torque constraint in y axis:
                 NonlinearConstraint(lambda x:
-                    + (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[2]) \
-                    - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3]) - T[4], -1e-4, 1e-4),
+                    + (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[1]) \
+                    - (np.sqrt(2)/2 * a * x[2]) - (np.sqrt(2)/2 * a * x[3]) - T[4], 0, 0),
 
                 # torque constraint in z axis:
                 # NonlinearConstraint(lambda x: np.sum(x[:4] - xp[:4]) - T[5], -1e-2, 1e-2),
 
                 # max thrust constraints for all motors:
                 NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf),
-                NonlinearConstraint(lambda x: max_thrusts[0] - np.abs(x[0]), 0, np.inf)]
+                NonlinearConstraint(lambda x: max_thrusts[1] - np.abs(x[1]), 0, np.inf),
+                NonlinearConstraint(lambda x: max_thrusts[2] - np.abs(x[2]), 0, np.inf),
+                NonlinearConstraint(lambda x: max_thrusts[3] - np.abs(x[3]), 0, np.inf),
+                NonlinearConstraint(lambda x: max_thrusts[4] - np.abs(x[4]), 0, np.inf),
+                NonlinearConstraint(lambda x: max_thrusts[5] - np.abs(x[5]), 0, np.inf),
+                NonlinearConstraint(lambda x: max_thrusts[6] - np.abs(x[6]), 0, np.inf),
+                NonlinearConstraint(lambda x: max_thrusts[7] - np.abs(x[7]), 0, np.inf)]
 
     # print(constraints)
 
@@ -185,7 +189,7 @@ def optim_thrust(T, max_thrusts, xp):
 
     #hess = lambda x: [0] * 8
 
-    #hess = BFGS()
+    hess = BFGS()
 
     #print(hess(x))
 
@@ -200,9 +204,9 @@ def optim_thrust(T, max_thrusts, xp):
 
     # print(k_t)
 
-    sol = minimize(lambda x: np.sum(x - xp), xp, method='trust-constr', bounds=bnds, constraints=constraints, options={'gtol': 1e-2, 'maxiter' : 1000}) #, jac = '2-point', hess = hess)
+    sol = minimize(lambda x: np.sum(x), xp, method='trust-constr', bounds=bnds, constraints=constraints, options={'maxiter' : 200}, jac = '2-point', hess = hess)
 
-    return sol.x
+    #return sol.x
 
 
     # end = time.time()
@@ -212,78 +216,79 @@ def optim_thrust(T, max_thrusts, xp):
 
     # time.sleep(timestep - (end-start))
 
-    # print(' \n RESULT INFORMATION - OPTIMTHRUST: \n')
+    print(' \n RESULT INFORMATION - OPTIMTHRUST: \n')
 
 
-    # def thrust_result_x(x): # this only does total thrust and total torque, must break up into three dimensions
-    #     return  (x[4] + x[5])
+    def thrust_result_x(x): # this only does total thrust and total torque, must break up into three dimensions
+         return  (x[4] + x[5])
 
-    # def torque_result_x(x): # torque from just the thrust forces, not including moments from the props
-    #     return (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[2]) \
-    #             - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3])
+    def torque_result_x(x): # torque from just the thrust forces, not including moments from the props
+         return (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[2]) \
+                 - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3])
 
-    # def thrust_result_y(x): # this only does total thrust and total torque, must break up into three dimensions
-    #     return (x[6] + x[7])
+    def thrust_result_y(x): # this only does total thrust and total torque, must break up into three dimensions
+         return (x[6] + x[7])
 
-    # def torque_result_y(x): # torque from just the thrust forces, not including moments from the props
-    #     return (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[1]) \
-    #             - (np.sqrt(2)/2 * a * x[2]) - (np.sqrt(2)/2 * a * x[3])
+    def torque_result_y(x): # torque from just the thrust forces, not including moments from the props
+         return (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[1]) \
+                 - (np.sqrt(2)/2 * a * x[2]) - (np.sqrt(2)/2 * a * x[3])
 
-    # def thrust_result_z(x): # this only does total thrust and total torque, must break up into three dimensions
-    #     return x[0] + x[1] + x[2] + x[3]
-
-
-
-    # print('success value of the optimization:')
-    # print(sol.success)
-    # # print('\n')
-
-    # print('solution of the optimization:')
-    # print(sol.x)
-    # # print('\n')
-
-    # # print(xp_quadratic_squared_times_kt)
-
-    # print('runtime of the optimization:')
-    # print(sol.execution_time)
-    # # print('\n')
-
-    # print('thrust constraint functions with sol.x passed in, result should be zero if the constraint is satisfied by the solution:')
-
-    # print(thrust_constraint_x(sol.x))
-    # print(thrust_constraint_y(sol.x))
-    # print(thrust_constraint_z(sol.x))
-
-    # # print('\n')
-
-    # print('torque constraint functions with sol.x passed in, result should be zero if the constraint is satisfied by the solution:')
-
-    # print(torque_constraint_x(sol.x))
-    # print(torque_constraint_y(sol.x))
-    # # print(torque_constraint_z(sol.x))
-
-    # # print('\n')
-
-    # print('thrust result functions with sol.x passed in, result is the thrust created in each axis by the calculated solution:')
-
-    # print(thrust_result_x(sol.x))
-    # print(thrust_result_y(sol.x))
-    # # print(thrust_result_z(sol.x))
-
-    # # print('\n')
-
-    # print('torque result functions with sol.x passed in, result is the torque created in each axis by the calculated solution:')
-
-    # print(torque_result_x(sol.x))
-    # print(torque_result_y(sol.x))
+    def thrust_result_z(x): # this only does total thrust and total torque, must break up into three dimensions
+         return x[0] + x[1] + x[2] + x[3]
 
 
-    # print('\n COMPARISON OF RESULTS: \n')
+
+   # print('success value of the optimization:')
+   # print(sol.success)
+   # print('\n')
+
+    print('solution of the optimization:')
+    print(sol.x)
+    print('\n')
+
+   # print(xp_quadratic_squared_times_kt)
+
+   # print('runtime of the optimization:')
+   # print(sol.execution_time)
+   # print('\n')
+
+    print('thrust constraint functions with sol.x passed in, result should be zero if the constraint is satisfied by the solution:')
+
+    print(thrust_constraint_x(sol.x))
+    print(thrust_constraint_y(sol.x))
+    print(thrust_constraint_z(sol.x))
+
+    print('\n')
+
+    print('torque constraint functions with sol.x passed in, result should be zero if the constraint is satisfied by the solution:')
+
+    print(torque_constraint_x(sol.x))
+    print(torque_constraint_y(sol.x))
+  #  print(torque_constraint_z(sol.x))
+
+    print('\n')
+
+    print('thrust result functions with sol.x passed in, result is the thrust created in each axis by the calculated solution:')
+
+    print(thrust_result_x(sol.x))
+    print(thrust_result_y(sol.x))
+    print(thrust_result_z(sol.x))
+
+    print('\n')
+
+    print('torque result functions with sol.x passed in, result is the torque created in each axis by the calculated solution:')
+
+    print(torque_result_x(sol.x))
+    print(torque_result_y(sol.x))
 
 
-    # print('thrusts of motors via quadratic, omega-based optimization: ')
-    # print(xp_quadratic_squared_times_kt)
+   # print('\n COMPARISON OF RESULTS: \n')
 
-    # print('thrusts of motors via linear, thrust-based optimization: ')
-    # print(sol.x)
 
+   # print('thrusts of motors via quadratic, omega-based optimization: ')
+   # print(xp_quadratic_squared_times_kt)
+
+   # print('thrusts of motors via linear, thrust-based optimization: ')
+   # print(sol.x)
+
+    return sol.x

@@ -36,15 +36,14 @@ motorPin6 = "P8_46"
 motorPin7 = "P8_19"
 motorPin8 = "P9_14"
 
-# make sure this works, starting duty cycle was previously 50, changed to 75 to see if this will arm them w/o moving throttle stick to middle
-PWM.start(motorPin1,75,500)
-PWM.start(motorPin2,75,500)
-PWM.start(motorPin3,75,500)
-PWM.start(motorPin4,75,500)
-PWM.start(motorPin5,75,500)
-PWM.start(motorPin6,75,500)
-PWM.start(motorPin7,75,500)
-PWM.start(motorPin8,75,500)
+PWM.start(motorPin1,50,500)
+PWM.start(motorPin2,50,500)
+PWM.start(motorPin3,50,500)
+PWM.start(motorPin4,50,500)
+PWM.start(motorPin5,50,500)
+PWM.start(motorPin6,50,500)
+PWM.start(motorPin7,50,500)
+PWM.start(motorPin8,50,500)
 
 duty_cycle = 75
 
