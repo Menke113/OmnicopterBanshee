@@ -10,7 +10,8 @@ from IMU_Code import *
 from PID import *
 from optim8D_BBB import *
 from optimThrust_BBB import *
-from dynamicsModel import *
+import dynamicsModel as dm
+from dm import *
 from arm_condition import *
 from control_loop import *
 
