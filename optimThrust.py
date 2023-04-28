@@ -5,7 +5,7 @@ from optim8D import *
 import asyncio
 import dynamicsModel
 from dynamicsModel import *
-
+t1 = time.time()
 # get python PID library
 
 print('\n \n \n')
@@ -43,12 +43,12 @@ torque_desired_z = np.random.uniform(-1.0,1.0) * 16
 #T = [thrust_desired_x, thrust_desired_y, thrust_desired_z, torque_desired_x, torque_desired_y, torque_desired_z]
 #jac = '2-point'
 #hess = BFGS()
-
-xp_quadratic = optim_quadratic_8D(T)
+t2 = time.time()
+#xp_quadratic = optim_quadratic_8D(T)
 
 k_t = max_thrust_motor_2306/(w_max_2306**2)
 
-xp_quadratic_squared_times_kt = [x**2 * np.sign(x) * k_t for x in xp_quadratic]
+#xp_quadratic_squared_times_kt = [x**2 * np.sign(x) * k_t for x in xp_quadratic]
 
 print(T)
 T = [T + T * np.random.uniform(-0.1,0.1) for T in T]
@@ -56,13 +56,13 @@ print(T)
 
 
 print('desired thrusts: ')
-print(thrust_desired_x)
-print(thrust_desired_y)
-print(thrust_desired_z)
+print(T[0])
+print(T[1])
+print(T[2])
 
-print(torque_desired_x)
-print(torque_desired_y)
-print(torque_desired_z)
+print(T[3])
+print(T[4])
+print(T[5])
 
 # k_t = 0.006 # thrust coefficient, using N and rad/s
 
@@ -77,6 +77,11 @@ I = 2.03e-2 * 0.009806652  # propeller + motor bell moment of inertia, in g/mm^2
 a = 322.58 # the diagonal distance from the quadrotor motors to the center of the frame in mm
 
 timestep = 0.1 # 10Hz update rate, must be enforced (change if code can't run fast enough)
+t3 = time.time()
+print("beginning to start of loop")
+print(t2-t1)
+print("start of loop to end of optim8D")
+print(t3-t2)
 
 def objective(x): # x is new 8D vector of w's, xp_quadratic is prev 8D vector of w's
     
@@ -240,34 +245,34 @@ print(bnds)
 #                {'type':'ineq', 'fun':torque_constraint_motor7},
 #                {'type':'ineq', 'fun':torque_constraint_motor8}]
 
-               # thrust constraint in x axis: 
-constraints = [{'type':'eq', 'fun':lambda x: (x[4] + x[5]) - thrust_desired_x},
-               
+               # thrust constraint in x axis:
+constraints = [NonlinearConstraint(lambda x: (x[4] + x[5]) - T[0],[0],[0]),
+
                # thrust constraint in y axis:
-               {'type':'eq', 'fun':lambda x: (x[6] + x[7]) - thrust_desired_y},
+               NonlinearConstraint(lambda x: (x[6] + x[7]) - T[1],[0],[0]),
 
                # thrust constraint in z axis:
-               {'type':'eq', 'fun':lambda x: (x[0] + x[1] + x[2] + x[3]- thrust_desired_z)},
+               NonlinearConstraint(lambda x: (x[0] + x[1] + x[2] + x[3]- T[2]),[0],[0]),
 
                # torque constraint in x axis:
-               {'type':'eq', 'fun':lambda x:
+               NonlinearConstraint(lambda x:
                 + (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[2]) \
-                - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3]) - torque_desired_x},
+                - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3]) - T[0],[0],[0]),
 
                # torque constraint in y axis:
-               {'type':'eq', 'fun':lambda x:
+               NonlinearConstraint(lambda x:
                 + (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[1]) \
-                - (np.sqrt(2)/2 * a * x[2]) - (np.sqrt(2)/2 * a * x[3]) - torque_desired_y},
+                - (np.sqrt(2)/2 * a * x[2]) - (np.sqrt(2)/2 * a * x[3]) - T[1],[0],[0]),
 
                # max thrust constraints for all motors:
-               {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - np.abs(x[0])},
-               {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - np.abs(x[1])},
-               {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - np.abs(x[2])},
-               {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - np.abs(x[3])},
-               {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - np.abs(x[4])},
-               {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - np.abs(x[5])},
-               {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - np.abs(x[6])},
-               {'type':'ineq', 'fun':lambda x: max_thrust_motor_2306 - np.abs(x[7])}]
+               NonlinearConstraint(lambda x: max_thrust_motor_2306 - np.abs(x[0]),[0],[np.inf]),
+               NonlinearConstraint(lambda x: max_thrust_motor_2306 - np.abs(x[1]),[0],[np.inf]),
+               NonlinearConstraint(lambda x: max_thrust_motor_2306 - np.abs(x[2]),[0],[np.inf]),
+               NonlinearConstraint(lambda x: max_thrust_motor_2306 - np.abs(x[3]),[0],[np.inf]),
+               NonlinearConstraint(lambda x: max_thrust_motor_2306 - np.abs(x[4]),[0],[np.inf]),
+               NonlinearConstraint(lambda x: max_thrust_motor_2306 - np.abs(x[5]),[0],[np.inf]),
+               NonlinearConstraint(lambda x: max_thrust_motor_2306 - np.abs(x[6]),[0],[np.inf]),
+               NonlinearConstraint(lambda x: max_thrust_motor_2306 - np.abs(x[7]),[0],[np.inf])]
 
 
 # print(constraints)
@@ -289,7 +294,7 @@ start = time.time()
 print('kt')
 print(k_t)
 
-sol = minimize(lambda x: (np.sum(x - (xp_quadratic_squared_times_kt))), x, method='trust-constr', bounds=bnds, constraints=constraints, options={'gtol': 1e-2, 'maxiter' : 1000}) # , jac = '2-point', hess = hess)
+sol = minimize(lambda x: (np.sum(x)), x, method='trust-constr', bounds=bnds, constraints=constraints, options={'gtol': 1e-2, 'maxiter' : 1000}, jac = '2-point', hess = hess)
 
 end = time.time()
 
@@ -327,14 +332,14 @@ def torque_result_z(x): # torque from just the thrust forces, not including mome
 
 
 print('success value of the optimization:')
-print(sol.success)
+#print(sol.success)
 # print('\n')
 
 print('solution of the optimization:')
 print(sol.x)
 # print('\n')
 
-print(xp_quadratic_squared_times_kt)
+#print(xp_quadratic_squared_times_kt)
 
 print('runtime of the optimization:')
 print(sol.execution_time)
