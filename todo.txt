@@ -1,5 +1,5 @@
 - get the code to initialize the ESCs integrated - done
-- make loop that checks for the arming signal (throttle down + switch flip triggers the ESCs to be initialized)
+- make loop that checks for the arming signal (throttle down + switch flip triggers the ESCs to be initialized) - done
 optimization formulations: linear, quadratic, and paired quadratic + linear with extra constraints added to keep omegas the same for
 motor pairs
 - parse data from sensors into arrays - done
