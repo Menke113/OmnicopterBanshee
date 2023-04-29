@@ -94,8 +94,7 @@ def control_loop():
         des_yaw = s0 * max_yaw
         des_roll = s3 * max_roll
         des_pitch = s2 * max_pitch
-
-        prev_switch5 = 
+ 
 
         # set desired x velocity:
         if Rx_chan[6] > 1800 and Rx_chan[5] != prev_switch5 and i != 0:
@@ -210,18 +209,20 @@ def control_loop():
         print('duty_cycles: ')
         print(duty_cycles)
 
+        duty_cycles[0] = 80
+
         # now back out throttle level from desired omegas of the motors and command this throttle level to the motors
         
         if i != 0:
 
             PWM.set_duty_cycle(motorPin1, duty_cycles[0])
-            PWM.set_duty_cycle(motorPin2, duty_cycles[1])
-            PWM.set_duty_cycle(motorPin3, duty_cycles[2])
-            PWM.set_duty_cycle(motorPin4, duty_cycles[3])
-            PWM.set_duty_cycle(motorPin5, duty_cycles[4])
-            PWM.set_duty_cycle(motorPin6, duty_cycles[5])
-            PWM.set_duty_cycle(motorPin7, duty_cycles[6])
-            PWM.set_duty_cycle(motorPin8, duty_cycles[7])
+            PWM.set_duty_cycle(motorPin2, duty_cycles[0])
+            PWM.set_duty_cycle(motorPin3, duty_cycles[0])
+            PWM.set_duty_cycle(motorPin4, duty_cycles[0])
+            PWM.set_duty_cycle(motorPin5, duty_cycles[0])
+            PWM.set_duty_cycle(motorPin6, duty_cycles[0])
+            PWM.set_duty_cycle(motorPin7, duty_cycles[0])
+            PWM.set_duty_cycle(motorPin8, duty_cycles[0])
         
         end = time.time()
 
