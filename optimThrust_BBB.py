@@ -148,23 +148,23 @@ def optim_thrust(T, max_thrusts, xp):
                 # thrust constraint in x axis: 
     # constraints = [{'type':'eq', 'fun':lambda x: (x[4] + x[5]) - T[0]},
 
-    constraints = [NonlinearConstraint(lambda x: (x[4] + x[5]) - T[0], -0.1, 0.1),
+    constraints = [NonlinearConstraint(lambda x: (x[4] + x[5]) - T[0], -0.2, 0.2),
                 
                 # thrust constraint in y axis:
-                NonlinearConstraint(lambda x: (x[6] + x[7]) - T[1], -0.1, 0.1),
+                NonlinearConstraint(lambda x: (x[6] + x[7]) - T[1], -0.2, 0.2),
 
                 # thrust constraint in z axis:
-                NonlinearConstraint(lambda x: (x[0] + x[1] + x[2] + x[3]) - T[2], -0.1, 0.1),
+                NonlinearConstraint(lambda x: (x[0] + x[1] + x[2] + x[3]) - T[2], -0.2, 0.2),
 
                 # torque constraint in x axis:
                 NonlinearConstraint(lambda x:
                     + (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[2]) \
-                    - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3]) - T[3], -1e-4, 1e-4),
+                    - (np.sqrt(2)/2 * a * x[1]) - (np.sqrt(2)/2 * a * x[3]) - T[3], -1e-2, 1e-2),
 
                 # torque constraint in y axis:
                 NonlinearConstraint(lambda x:
                     + (np.sqrt(2)/2 * a * x[0]) + (np.sqrt(2)/2 * a * x[1]) \
-                    - (np.sqrt(2)/2 * a * x[2]) - (np.sqrt(2)/2 * a * x[3]) - T[4], -1e-4, 1e-4)]
+                    - (np.sqrt(2)/2 * a * x[2]) - (np.sqrt(2)/2 * a * x[3]) - T[4], -1e-2, 1e-2)]
 
                 # torque constraint in z axis:
                 # NonlinearConstraint(lambda x: np.sum(x[:4] - xp[:4]) - T[5], -1e-2, 1e-2),
@@ -204,7 +204,7 @@ def optim_thrust(T, max_thrusts, xp):
 
     # print(k_t)
 
-    sol = minimize(lambda x: np.sum(x), xp, method='trust-constr', bounds=bnds, constraints=constraints, options={'maxiter' : 200, 'gtol' : 1e-2, 'xtol' : 1e-2, 'barrier_tol' : 1e-2}, jac = '2-point', hess = hess)
+    sol = minimize(lambda x: np.sum(x), xp, method='trust-constr', bounds=bnds, constraints=constraints, options={'maxiter' : 200, 'gtol' : 1, 'xtol' : 1, 'barrier_tol' : 1}, jac = '2-point', hess = hess)
 
     #return sol.x
 

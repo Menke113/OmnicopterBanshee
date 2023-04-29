@@ -18,14 +18,14 @@ def control_loop():
 
     loop_timestep_optimThrust = 0.1
 
-    motorPin1 = "P8_34"
-    motorPin2 = "P9_29"
-    motorPin3 = "P8_13"
-    motorPin4 = "P9_31"
-    motorPin5 = "P8_36"
-    motorPin6 = "P8_46"
-    motorPin7 = "P8_19"
-    motorPin8 = "P9_14"
+    motorPin1 = "P8_34" # good
+    motorPin2 = "P9_29" # good
+    motorPin3 = "P8_13" # doubled with P8_46
+    motorPin4 = "P9_31" # good
+    motorPin5 = "P8_36" # doubled with P9_14
+    motorPin6 = "P8_46" # doubled with P8_13
+    motorPin7 = "P8_19" # good
+    motorPin8 = "P9_14" # doubled with P8_36
 
     max_yaw = 100 # max yaw rate, rad/s
     max_roll = 100 # max roll rate, rad/s
@@ -209,20 +209,16 @@ def control_loop():
         print('duty_cycles: ')
         print(duty_cycles)
 
-        duty_cycles[0] = 80
-
         # now back out throttle level from desired omegas of the motors and command this throttle level to the motors
-        
-        if i != 0:
 
-            PWM.set_duty_cycle(motorPin1, duty_cycles[0])
-            PWM.set_duty_cycle(motorPin2, duty_cycles[0])
-            PWM.set_duty_cycle(motorPin3, duty_cycles[0])
-            PWM.set_duty_cycle(motorPin4, duty_cycles[0])
-            PWM.set_duty_cycle(motorPin5, duty_cycles[0])
-            PWM.set_duty_cycle(motorPin6, duty_cycles[0])
-            PWM.set_duty_cycle(motorPin7, duty_cycles[0])
-            PWM.set_duty_cycle(motorPin8, duty_cycles[0])
+        PWM.set_duty_cycle(motorPin1, duty_cycles[0])
+        PWM.set_duty_cycle(motorPin2, duty_cycles[1])
+        PWM.set_duty_cycle(motorPin3, duty_cycles[2])
+        PWM.set_duty_cycle(motorPin4, duty_cycles[3])
+        PWM.set_duty_cycle(motorPin5, duty_cycles[4])
+        PWM.set_duty_cycle(motorPin6, duty_cycles[5])
+        PWM.set_duty_cycle(motorPin7, duty_cycles[6])
+        PWM.set_duty_cycle(motorPin8, duty_cycles[7])
         
         end = time.time()
 
