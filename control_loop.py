@@ -28,9 +28,9 @@ def control_loop():
     motorPin7 = "P8_19" # good
     motorPin8 = "P9_14" # doubled with P8_36
 
-    max_yaw = 100 # max yaw rate, rad/s
-    max_roll = 100 # max roll rate, rad/s
-    max_pitch = 100 # max pitch rate, rad/s
+    max_yaw = 0.628 # max yaw rate, rad/s
+    max_roll = 0.628 # max roll rate, rad/s
+    max_pitch = 0.628 # max pitch rate, rad/s
 
     des_x = 0
     des_y = 0
@@ -87,14 +87,18 @@ def control_loop():
             PWM.set_duty_cycle(motorPin6, duty_cycle)
             PWM.set_duty_cycle(motorPin7, duty_cycle)
             PWM.set_duty_cycle(motorPin8, duty_cycle)
-            break
+
             arm_loop()
 
         Rx_chan = asyncio.run(get_frame())
-        s0 = (Rx_chan[0]-173)/(1810-173) * 2 - 1 # yaw input, 0-1
-        s1 = (Rx_chan[1]-173)/(1810-173) * 2 - 1 # throttle input, 0-1
-        s2 = (Rx_chan[2]-173)/(1810-173) * 2 - 1 # pitch input, 0-1
-        s3 = (Rx_chan[3]-173)/(1810-173) * 2 - 1 # roll input, 0-1
+        s0 = (Rx_chan[0]-173)/(1810-173) * 2 - 1 # yaw input, -1 to 1
+        s1 = (Rx_chan[1]-173)/(1810-173) # throttle input, -1 to 1
+        s2 = (Rx_chan[2]-173)/(1810-173) * 2 - 1 # pitch input, -1 to 1
+        s3 = (Rx_chan[3]-173)/(1810-173) * 2 - 1 # roll input, -1 to 1
+
+        max_thrust_setting = s1 * 25
+
+        print
 
         des_yaw = s0 * max_yaw
         des_roll = s3 * max_roll
@@ -104,7 +108,7 @@ def control_loop():
         # set desired x velocity:
         if Rx_chan[6] < 250 and Rx_chan[5] != prev_switch5 and i != 0:
 
-            if Rx_chan[5] < 250 and Rx_chan[5]:
+            if Rx_chan[5] < 250:
                 print('Set des_x to 100')
                 des_x = max_rate_x # 100 mm/s
 
@@ -123,7 +127,7 @@ def control_loop():
                 print('Set des_y to 100')
                 des_y = max_rate_y # 100 mm/s
 
-            if Rx_chan[5] < 1800 and Rx_chan[4] > 250:
+            if Rx_chan[5] < 1800 and Rx_chan[5] > 250:
                 print('Set des_y to 0')
                 des_y = 0 # 100 mm/s
 
@@ -187,38 +191,63 @@ def control_loop():
         prev_error_pitch = PID_pitch[1]
         error_sum_pitch = PID_pitch[2]
 
-        accel_mods = [xlinc, ylinc, zlinc, yawc, rollc, pitchc]
+
+        accel_mods = [xlinc * np.sign(des_x - linvel[0]), ylinc * np.sign(des_y - linvel[1]), zlinc * np.sign(des_z - linvel[2]), 
+        yawc * np.sign(des_yaw - psi), rollc * np.sign(des_roll - phi), pitchc * np.sign(des_pitch - theta)]
+
+        print('accel_mods is: ')
+        print(accel_mods)
+
         des_state = [des_x, des_y, des_z, des_yaw, des_roll, des_pitch]
 
         # now that we have controller outputs, call dynamics function with the inputted desired accelerations scaled by the controller outputs:
         # print("here")
-        # T = asyncio.run(get_T(accel_mods, des_state))
+        T = asyncio.run(get_T(accel_mods, des_state))
 
-        T = asyncio.run(get_T())
+        # T = asyncio.run(get_T())
 
-        # print(T)
+        print('desired forces and moments: ')
+        print('T before adjustment to N: ')
+
+        print(T)
+
+        T[:3] = T[:3] * (np.array([0.009806552] * 3))
+
+        print(T)
 
         # call optimization to get desired angular velocities of motors
 
         # thrusts = optim_thrust(T, max_thrusts, thrusts)
 
+
         thrusts = get_thrusts(T)
+        print('desired motor thrusts from get_thrust() are:')
+        print(thrusts)
         # print('thrusts: ')
         # print(thrusts)
         # print('max_thrusts: ')
         # print(max_thrusts)
         throttles = thrusts/max_thrusts
         duty_cycles = throttles * 25 + 75
-        for dc in duty_cycles:
-            if dc < 50:
-                dc = 50
-            if dc > 100:
-                dc = 100
 
-        # print('throttle levels: ')
-        # print(throttles)
-        # print('duty_cycles: ')
+        # print('duty_cycles before loop: ')
         # print(duty_cycles)
+
+
+        i = 0
+        for dc in duty_cycles:
+            if dc < (75 - max_thrust_setting):
+                dc = 75 - max_thrust_setting
+            if dc > (75 + max_thrust_setting):
+                dc = 75 + max_thrust_setting
+
+            duty_cycles[i] = dc
+            i += 1
+
+        print('throttle levels: ')
+        print(throttles)
+        print('duty_cycles after loop: ')
+        print(duty_cycles)
 
         # now back out throttle level from desired omegas of the motors and command this throttle level to the motors
 
