@@ -144,9 +144,9 @@ def control_loop():
 
         # prev_switch4 = Rx_chan[4]
         prev_switch5 = Rx_chan[5]
-        
+
         linvel = get_linearVelocity()
-        
+
         phi = get_euler()[0]
         theta = get_euler()[1]
         psi = get_euler()[2]
@@ -187,8 +187,8 @@ def control_loop():
 
         # now that we have controller outputs, call dynamics function with the inputted desired accelerations scaled by the controller outputs:
         # print("here")
-        T = asyncio.run(get_T())
-        # print(T)
+        T = asyncio.run(get_T(accel_mods))
+        print(T)
 
         # call optimization to get desired angular velocities of motors
 
@@ -222,7 +222,7 @@ def control_loop():
         PWM.set_duty_cycle(motorPin6, duty_cycles[5])
         PWM.set_duty_cycle(motorPin7, duty_cycles[6])
         PWM.set_duty_cycle(motorPin8, duty_cycles[7])
-        
+
         end = time.time()
 
         i += 1
@@ -230,3 +230,8 @@ def control_loop():
         if i % 100 == 0:
             i = 1
             print(end - begin)
+
+
+
+while 1:
+        control_loop()
