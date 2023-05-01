@@ -132,7 +132,7 @@ class SBUSReceiver:
         return receiver
 
     async def get_frame(self):
-        print('get frame ran')
+        # print('get frame ran')
         return await self._protocol.frames.get()
 
 
