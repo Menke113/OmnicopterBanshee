@@ -12,6 +12,7 @@ from optim8D import *
 from optimThrust_BBB import *
 from dynamicsModel import *
 from arm_condition import *
+from SOE_solver import *
 
 
 def control_loop():
@@ -191,7 +192,9 @@ def control_loop():
 
         # call optimization to get desired angular velocities of motors
 
-        thrusts = optim_thrust(T, max_thrusts, thrusts)
+        # thrusts = optim_thrust(T, max_thrusts, thrusts)
+
+        thrusts = get_thrusts(T)
         print('thrusts: ')
         print(thrusts)
         print('max_thrusts: ')
