@@ -48,4 +48,6 @@ async def get_frame():
 	frame = await main()
 	f = SBUSReceiver.SBUSFrame.get_rx_channels(frame)
 	return [f[0],f[1],f[2],f[3],f[4],f[5],f[6]]
-#print(asyncio.run(get_frame()))
+
+#while 1:
+#	print(asyncio.run(get_frame()))

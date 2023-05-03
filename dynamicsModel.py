@@ -23,10 +23,6 @@ Iyy = 35990963.19/(10**9)
 Izz = 15507494.32/(10**9)
 #I = np.array([[Ixx, 0, 0], [0, Iyy, 0],[0, 0, Izz]])
 
-direction = 0
-x_dot = 0
-y_dot = 0
-z_dot = 0
 
 
 
@@ -47,12 +43,6 @@ async def get_T(accel_mods,des_state):
 	theta_ddot = accel_mods[5]
 	psi_ddot = accel_mods[3]
 	angle_accel = [phi_ddot,theta_ddot,psi_ddot]
-
-"""
-	phi_dot = (frame_data[3]-173)/(1810-173)-0.5     #roll
-	theta_dot = (frame_data[2]-173)/(1810-173)-0.5    #pitch
-	psi_dot = (frame_data[0]-173)/(1810-173)-0.5      #yaw
-"""
 
 	angle_vel = [des_state[1],des_state[2],des_state[0]]
 
@@ -111,11 +101,11 @@ async def get_T(accel_mods,des_state):
 #	print([Tx,Ty,Tz])
 #	print(Tx[0])
 #	print("before return")
-	T = [Tx[0],Ty[0],Tz[0],Tphi,Ttheta,Tpsi]   #There is some weird formating that the [0] get around
+	T = [Tx,Ty,Tz,Tphi,Ttheta,Tpsi]   #There is some weird formating that the [0] get around
 	return T
-
-#x = asyncio.run(get_T())
-
+#y=100
+#x = asyncio.run(get_T([y,y,y,y,y,y],[y,y,y,y,y,y]))
+#print(x)
 
 
 #prepare_for_get_T()

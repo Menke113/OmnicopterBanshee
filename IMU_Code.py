@@ -94,7 +94,8 @@ def get_linearVelocity():
 #eulerData = sensor.euler
 #gravityData = sensor.gravity
 #print("Euler: {}".format(get_euler()))
-#print("Gravity: {}".format(gravityData))
+#while 1:
+#	print("Gravity: {}".format(sensor.gravity))
 #print("Acceleration: {}".format(sensor.acceleration))
 #print("Gyroscope: {}".format(sensor.gyro))
 #print("Quaternion: {}".format(quaternionData))

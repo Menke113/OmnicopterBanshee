@@ -140,18 +140,20 @@ async def main():
 #    print("before getframe")
     frame = await sbus.get_frame()
  #   print("after await")
-#    print(frame)
+ #   print(frame)
     return frame
 
 #print(asyncio.run(main()))
 
-
-#if __name__ == '__main__':
- #   loop = asyncio.get_event_loop()
-  #  loop.run_until_complete(main())
-   # loop.run_forever()
-   # loop.close()
-
-
+if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
+#    loop.run_forever()
+    loop.close()
 
 #print(asyncio.run(main()))
+
+#while 1:
+#    x = sbus.get_frame()
+#    print(x)
+#    print(asyncio.run(main()))
